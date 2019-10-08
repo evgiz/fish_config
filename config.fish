@@ -1,11 +1,20 @@
 # Greeting
-set fish_greeting " ______ _____  _____ _    _ 
+function fish_greeting 
+    clear
+    printf '\e[3J'
+    echo " ______ _____  _____ _    _ 
 |  ____|_   _|/ ____| |  | |
 | |__    | | | (___ | |__| |
 |  __|   | |  \___ \|  __  |
 | |     _| |_ ____) | |  | |
 |_|    |_____|_____/|_|  |_|
 "
+end
+
+# Real clear
+function new
+    fish_greeting
+end
 
 # Git abbreviations
 abbr -a -g g git
@@ -24,17 +33,24 @@ abbr -a -g gcm git checkout master
 abbr -a -g gd git diff
 
 # Destinations
-abbr -a -g dev $HOME/Development/
-abbr -a -g stud $HOME/Studies/
 abbr -a -g desk $HOME/Desktop/
 abbr -a -g samf $HOME/Development/Samfundet/Samfundet
+
+function dev
+    cd $HOME/Development
+    ls 
+end
+
+function stud
+    cd $HOME/Studies
+    ls 
+end
 
 # Python
 abbr -a -g py python3
 abbr -a -g pip pip3
 abbr -a -g py2 python
 abbr -a -g pip2 pip
-
 
 # ==================== #
 #  Applications (Mac)  #

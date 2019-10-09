@@ -38,7 +38,7 @@ abbr -a -g gcmsg git commit -m
 abbr -a -g gc git commit -m
 abbr -a -g gp git push
 abbr -a -g gl git pull
-abbr -a -g gst git status
+abbr -a -g gst git status --short
 abbr -a -g glog git log --oneline --decorate --color --graph
 abbr -a -g gco git checkout
 abbr -a -g gba git branch -a
@@ -53,10 +53,20 @@ function ghclone
 end
 
 # Destinations
-abbr -a -g fishy $__fish_config_dir
+abbr -a -g fish_dir $__fish_config_dir
+abbr -a -g fish_conf code $__fish_config_dir/config.fish
 abbr -a -g desk $HOME/Desktop/
-abbr -a -g samf $HOME/Development/Samfundet/Samfundet
 abbr -a -g home cd
+abbr -a -g reddit tuir
+
+function samf
+    cd $HOME/Development/Samfundet/Samfundet
+    git status -b --short
+end
+function samfexec
+    samf
+    bundle exec rails s
+end
 
 function dev
     cd $HOME/Development
@@ -66,6 +76,18 @@ end
 function stud
     cd $HOME/Studies
     ls 
+end
+
+# Quick directory jump
+function save
+    set -U fish_tmp_save_dir $PWD
+    set_color yellow
+    printf "Saved"
+    set_color normal
+end
+
+function back
+    cd $fish_tmp_save_dir
 end
 
 # Python

@@ -1,3 +1,5 @@
 *
 !.gitignore
 !config.fish
+!/mypy/*.py
+

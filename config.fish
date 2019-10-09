@@ -2,6 +2,7 @@
 function fish_greeting 
     clear
     printf '\e[3J'
+    set_color yellow
     echo " ______ _____  _____ _    _ 
 |  ____|_   _|/ ____| |  | |
 | |__    | | | (___ | |__| |
@@ -9,10 +10,12 @@ function fish_greeting
 | |     _| |_ ____) | |  | |
 |_|    |_____|_____/|_|  |_|
 "
+    set_color normal
 end
 
 # Real clear
 function new
+    source $HOME/.config/fish/config.fish
     fish_greeting
 end
 
@@ -31,8 +34,15 @@ abbr -a -g gba git branch -a
 abbr -a -g gb git branch
 abbr -a -g gcm git checkout master
 abbr -a -g gd git diff
+abbr -a -g gclone git clone
+
+# Github
+function ghclone 
+    git clone "http://github.com/evgiz/"$argv[1] $argv[2]
+end
 
 # Destinations
+abbr -a -g fishy $HOME/.config/fish
 abbr -a -g desk $HOME/Desktop/
 abbr -a -g samf $HOME/Development/Samfundet/Samfundet
 

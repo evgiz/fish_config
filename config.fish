@@ -15,11 +15,7 @@ end
 
 # Real clear
 function new
-<<<<<<< HEAD
     source $__fish_config_dir/config.fish
-=======
-    source $HOME/.config/fish/config.fish
->>>>>>> a6e9b82fdb19deb47575d14c52fac8b43c737484
     fish_greeting
 end
 
@@ -57,11 +53,7 @@ function ghclone
 end
 
 # Destinations
-<<<<<<< HEAD
 abbr -a -g fishy $__fish_config_dir
-=======
-abbr -a -g fishy $HOME/.config/fish
->>>>>>> a6e9b82fdb19deb47575d14c52fac8b43c737484
 abbr -a -g desk $HOME/Desktop/
 abbr -a -g samf $HOME/Development/Samfundet/Samfundet
 abbr -a -g home cd

@@ -10,10 +10,10 @@ Useful for generating collages from the results of a GAN or other machine learni
 
 Usage:
 
-    $ composite.py [path] [rows] [limit] [contains]
+    $ collage.py [path] [rows] [limit] [contains]
 
     path:        directory with images
-    rows:        number of rows in composite
+    rows:        number of rows in collage
     limit:       max number of images
     contains:    only include images with keyword
 
@@ -28,11 +28,11 @@ import numpy as np
 
 
 # ============================ #
-#      Generate composite      #
+#      Generate collage        #
 # ============================ #
 
-def create_composite(c_images, c_rows):
-    composite = []
+def create_collage(c_images, c_rows):
+    collage = []
     images_per_row = int(np.ceil(len(c_images) / float(c_rows)))
     for img_row in range(c_rows):
         current_images = c_images[img_row * images_per_row:img_row * images_per_row + images_per_row]
@@ -43,8 +43,8 @@ def create_composite(c_images, c_rows):
             for c_img in current_images:
                 for x in c_img[pixel_row]:
                     c_row.append(x)
-            composite.append(c_row)
-    return np.array(composite)
+            collage.append(c_row)
+    return np.array(collage)
 
 
 # ============================ #
@@ -114,6 +114,6 @@ if __name__ == "__main__":
         print("No images found in directory", path)
         exit(0)
 
-    result = create_composite(images, rows)
+    result = create_collage(images, rows)
     sk.io.imsave(output, result)
-    print("Composite created.")
+    print("collage created.")

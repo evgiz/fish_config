@@ -1,5 +1,5 @@
-*
+/*
 !.gitignore
 !config.fish
-!/mypy/*.py
+!mypy
 

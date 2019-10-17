@@ -65,6 +65,7 @@ function samf
 end
 function samfexec
     samf
+    rvm use ruby-2.5.5
     bundle exec rails s
 end
 
@@ -97,12 +98,19 @@ abbr -a -g py2 python
 abbr -a -g pip2 pip
 
 # Python scripts manager
-abbr -a -g mypys mypy -l
 function mypy 
-    if test (count $argv) = 0
-        set_color yellow
-        echo 'Usage: mypy <name>'
-        set_color normal        
+    if test (count $argv) = 0 || test $argv[1] = "-l"
+        if test -e $__fish_config_dir/mypy/".list.py"
+            python3 $__fish_config_dir/mypy/".list.py"
+        else
+            set_color green
+            echo '-------------------------'
+            set_color red
+            ls $__fish_config_dir/mypy
+            set_color green
+            echo '-------------------------'
+            set_color normal
+        end
     else if test $argv[1] = "-h"
         set_color green
         echo "  Usage"
@@ -115,18 +123,6 @@ function mypy
         echo '  open    mypy -o'
         echo '  list    mypy -l'
         set_color normal
-    else if test $argv[1] = "-l"
-        if test -e $__fish_config_dir/mypy/".list.py"
-            python3 $__fish_config_dir/mypy/".list.py"
-        else
-            set_color green
-            echo '-------------------------'
-            set_color red
-            ls $__fish_config_dir/mypy
-            set_color green
-            echo '-------------------------'
-            set_color normal
-        end
     else if test $argv[1] = "-e"
         if test (count $argv) = 2
             if test -e $__fish_config_dir/mypy/$argv[2]".py"
@@ -218,6 +214,82 @@ function mypy
             echo "Script not found."
             set_color normal
         end
+    end
+end
+
+# ==================== #
+#      Utilities       #
+# ==================== #
+
+# Stopwatch
+function stopwatch 
+    clear
+    printf '\e[3J'
+    set_color red
+    echo " __ _                           _       _     
+/ _\ |_ ___  _ ____      ____ _| |_ ___| |__  
+\ \| __/ _ \| '_ \ \ /\ / / _` | __/ __| '_ \ 
+_\ \ || (_) | |_) \ V  V / (_| | || (__| | | |
+\__/\__\___/| .__/ \_/\_/ \__,_|\__\___|_| |_|
+            |_|                               "
+    set s_time (date +%s)
+    while true
+        set p_time (math (date +%s) - $s_time)
+        printf "\t\t  "(date -u -r $p_time +%T)"\n"
+        sleep 1
+        printf '\033[A\r'
+    end
+    set_color normal
+end
+
+# Timer
+function timer 
+    if test (count $argv) = 1
+        clear
+        printf '\e[3J'
+        set_color cyan
+        echo "   ___              _      _                 
+  / __|___ _  _ _ _| |_ __| |_____ __ ___ _  
+ | (__/ _ \ || | ' \  _/ _` / _ \ V  V / ' \ 
+  \___\___/\_,_|_||_\__\__,_\___/\_/\_/|_||_|
+                                             "
+        set t_run 1
+        set end_time (math (date +%s) + (math $argv[1] \* 60))
+        while test $t_run = 1
+            set d_time (math $end_time - (date +%s))
+            if test $d_time = 0
+                set t_run = 0
+            else
+                printf "\t\t  "(date -u -r $d_time +%T)"\n"
+                sleep 1
+                printf '\033[A\r'
+            end
+        end
+        while true 
+            if test $t_run = 1
+                set_color red
+                set t_run 0
+            else
+                set_color green
+                set t_run 1
+            end
+            clear
+            printf '\e[3J\r'
+            printf "  _____   ____  _   _ ______ 
+ |  __ \ / __ \| \ | |  ____|
+ | |  | | |  | |  \| | |__   
+ | |  | | |  | | . ` |  __|  
+ | |__| | |__| | |\  | |____ 
+ |_____/ \____/|_| \_|______|
+                             
+                             "
+            # Mac only
+            afplay /System/Library/Sounds/Purr.aiff
+        end
+    else
+        set_color yellow; 
+        echo "Missing minute argument"
+        set_color normal
     end
 end
 

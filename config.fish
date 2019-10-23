@@ -1,5 +1,6 @@
 # Greeting
 function fish_greeting 
+    rvm use ruby-2.5.5 | /dev/null
     clear
     printf '\e[3J'
     set_color yellow

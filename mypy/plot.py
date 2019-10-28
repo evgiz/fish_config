@@ -16,12 +16,12 @@ if __name__ == "__main__":
     stop = 1
 
     if len(sys.argv) == 4:
-        start = int(sys.argv[3])
-        stop = int(sys.argv[4])
+        start = int(sys.argv[2])
+        stop = int(sys.argv[3])
     elif len(sys.argv) == 3:
         point = int(sys.argv[2])
         if point < 0:
-            stat = point
+            start = point
         else:
             stop = point
         

@@ -8,6 +8,7 @@ if __name__ == "__main__":
 
     path = 'report'
     filename = 'report.tex'
+    refs = 'references.bib'
 
     if len(sys.argv) > 1:
         path = sys.argv[1]
@@ -17,7 +18,13 @@ if __name__ == "__main__":
             filename += '.tex'
     
     if os.path.isdir(path):
-        print('Directory {} already exists'.format(path))
+        if os.path.exists(os.path.join(path, filename)):
+            print('File {} already exists. Aborted.'.format(filename))
+            exit(-1)
+        if os.path.exists(os.path.join(path, refs)):
+            print('File {} already exists. Aborted.'.format(refs))
+            exit(-1)
+
     else:
         print('Creating directory {}'.format(path))
         os.mkdir(path)
@@ -30,8 +37,8 @@ if __name__ == "__main__":
     template_src = os.path.join(latex_path, 'template.tex')
     template_dst = os.path.join(path, filename)
 
-    references_src = os.path.join(latex_path, 'references.bib')
-    references_dst = os.path.join(path, 'references.bib')
+    references_src = os.path.join(latex_path, refs)
+    references_dst = os.path.join(path, refs)
 
     copyfile(template_src, template_dst)
     copyfile(references_src, references_dst)

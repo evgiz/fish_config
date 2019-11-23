@@ -61,7 +61,7 @@ abbr -a -g home cd
 abbr -a -g reddit tuir
 
 function samf
-    cd $HOME/Development/Samfundet/Samfundet
+    cd $HOME/LocalDev/Samfundet/Samfundet
     git status -b --short
 end
 function samfexec
@@ -97,6 +97,7 @@ abbr -a -g py python3
 abbr -a -g pip pip3
 abbr -a -g py2 python
 abbr -a -g pip2 pip
+abbr -a -g http python3 -m http.server
 
 # Python scripts manager
 function mypy 

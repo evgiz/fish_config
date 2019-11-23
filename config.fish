@@ -78,9 +78,20 @@ end
 function stud
     if test (count $argv) = 1
         cd (python3 $HOME/.config/fish/script/studies_shortcut.py $argv[1])
+        if test -e ./.title
+            set_color red
+            cat .title
+        end
+        ls
     else
         cd $HOME/Studies
         python3 $HOME/.config/fish/script/studies_shortcut.py
+        cd (python3 $HOME/.config/fish/script/studies_shortcut.py (read -P " > "))
+        if test -e ./.title
+            set_color red
+            cat .title
+        end
+        ls
     end
 end
 

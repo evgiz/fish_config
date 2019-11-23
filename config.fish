@@ -76,11 +76,11 @@ function dev
 end
 
 function stud
-    if test (count $argv) = 0
+    if test (count $argv) = 1
+        cd (python3 $HOME/.config/fish/script/studies_shortcut.py $argv[1])
+    else
         cd $HOME/Studies
         python3 $HOME/.config/fish/script/studies_shortcut.py
-    else
-        cd (python3 $HOME/.config/fish/script/studies_shortcut.py $argv[1])
     end
 end
 

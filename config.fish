@@ -76,8 +76,12 @@ function dev
 end
 
 function stud
-    cd $HOME/Studies
-    ls 
+    if test (count $argv) = 0
+        cd $HOME/Studies
+        python3 $HOME/.config/fish/script/studies_shortcut.py
+    else
+        cd (python3 $HOME/.config/fish/script/studies_shortcut.py $argv[1])
+    end
 end
 
 # Quick directory jump

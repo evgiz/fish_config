@@ -2,4 +2,4 @@
 !.gitignore
 !config.fish
 !mypy
-
+!script

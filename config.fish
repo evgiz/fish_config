@@ -81,6 +81,7 @@ function stud
         if test -e ./.title
             set_color red
             cat .title
+            set_color normal
         end
         ls
     else
@@ -90,6 +91,7 @@ function stud
         if test -e ./.title
             set_color red
             cat .title
+            set_color normal
         end
         ls
     end

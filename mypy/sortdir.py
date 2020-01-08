@@ -22,16 +22,36 @@ CATEGORIES = {
     "script": ["py", "lua", "sql", "js", "fish"]
 }
 
+MAX_RECENT_FILES = 15
+
 if __name__ == "__main__":
 
     path = os.getcwd()
+    recent_path = os.path.join(path, "recent")
     files = os.listdir(path)
-    
+
     if len(sys.argv) < 2 or sys.argv[1] != "skip":
         if input("Are you sure? [y/n]") not in ["Y","y"]:
             print("Aborted")
             exit(-1)   
 
+    
+    recent_files = []
+
+    # Load recent files
+    if not os.path.exists(recent_path):
+        os.mkdir(recent_path)
+    if os.path.exists(os.path.join(recent_path, ".recent")):
+        with open(os.path.join(recent_path, ".recent"), "r") as f:
+            lines = f.readlines()
+            for line in lines:
+                f_dat = line.split("\t")
+                if len(f_dat) >= 2:
+                    recent_files.append({
+                        "name": f_dat[0].strip(),
+                        "path": f_dat[1].strip()
+                    })
+                
     results = {"directories": []}
     for c in CATEGORIES:
         results[c] = []
@@ -42,10 +62,12 @@ if __name__ == "__main__":
         fn, ext = os.path.splitext(filename)
         ext = ext[1:].lower()
 
+        if fn == ".DS_Store":
+            continue
         if ext == "download":
             continue
         if ext != "app" and os.path.isdir(os.path.join(path, filename)):
-            if fn not in CATEGORIES and fn != "other":
+            if fn not in CATEGORIES and fn not in ["other", "directories", "recent"]:
                 results["directories"].append(filename)
         else:
             ok = False
@@ -74,7 +96,11 @@ if __name__ == "__main__":
                     number += 1
                 if move_name is not fname:
                     os.rename(fname, move_name)
-                shutil.move(move_name, cat_path)
+                recent_files.append({
+                    "name": move_name,
+                    "path": move_path
+                })
+                shutil.move(move_name, move_path)
 
     if len(other) > 0:
         other_path = os.path.join(path, "other")
@@ -92,6 +118,25 @@ if __name__ == "__main__":
                 number += 1
             if move_name is not fname:
                 os.rename(fname, move_name)
+            recent_files.append({
+                "name": move_name,
+                "path": other_path
+            })
             shutil.move(move_name, other_path)
+
+    # Update recents folder
+    old_recent = [ f for f in os.listdir(recent_path) if not os.path.isdir(os.path.join(recent_path, f)) ]
+    for f_name in old_recent:
+        os.remove(os.path.join(recent_path, f_name))
+    
+    while len(recent_files) > MAX_RECENT_FILES:
+        recent_files.pop(0)
+
+    for f in recent_files:
+        os.symlink(f["path"], os.path.join(recent_path, f["name"]))
+
+    with open(os.path.join(recent_path, ".recent"), "w") as f:
+        for r in recent_files:
+            f.write(r["name"]+"\t"+r["path"]+"\n")
 
     print("Done")

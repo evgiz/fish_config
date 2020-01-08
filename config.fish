@@ -328,9 +328,9 @@ end
 # PyCharm
 function pycharm 
     if count $argv > /dev/null
-        open $argv -a "/Applications/PyCharm CE.app" 
+        open $argv -a "/Applications/PyCharm.app" 
     else
-        open . -a "/Applications/PyCharm CE.app"
+        open . -a "/Applications/PyCharm.app"
     end
 end
 

@@ -20,6 +20,9 @@ function new
     fish_greeting
 end
 
+# Source
+# alias -a -g source source $__fish_config_dir/config.fish
+
 # Quick tmp
 function tmp
     cd $HOME/Development/.tmp
@@ -48,6 +51,9 @@ abbr -a -g gcm git checkout master
 abbr -a -g gd git diff
 abbr -a -g gclone git clone
 
+# Open
+alias open "open ."
+
 # Github
 function ghclone 
     git clone "http://github.com/evgiz/"$argv[1] $argv[2]
@@ -59,6 +65,9 @@ abbr -a -g fish_conf code $__fish_config_dir/config.fish
 abbr -a -g desk $HOME/Desktop/
 abbr -a -g home cd
 abbr -a -g reddit tuir
+
+# Path
+set PATH /Users/sigve/.cargo/bin $PATH
 
 function samf
     cd $HOME/LocalDev/Samfundet/Samfundet
@@ -75,6 +84,23 @@ function dev
     ls 
 end
 
+function ldev
+    cd $HOME/LocalDev
+    ls 
+end
+
+# SSH NTNU lab
+function sshntnu
+    if not set -q argv[1]
+        set argv[1] "11"
+    end
+    set_color green
+    echo "Connecting to Cybele $argv[1]/26"
+    set_color normal
+    ssh "sigverok@clab$argv[1].idi.ntnu.no" 
+end
+
+# Study manager
 function stud
     if test (count $argv) = 1
         cd (python3 $HOME/.config/fish/script/studies_shortcut.py $argv[1])
@@ -99,10 +125,25 @@ end
 
 # Quick directory jump
 function save
-    set -U fish_tmp_save_dir $PWD
-    set_color yellow
-    printf "Saved"
-    set_color normal
+    if test (count $argv) = 0
+        set -U fish_tmp_save_dir $PWD
+        set_color yellow
+        printf "Saved"
+        set_color normal
+    else
+        set -U (printf "shortcut_%s" $argv[1]) $PWD
+        set_color yellow
+        printf "Shortcut '%s' as %s" $argv[1] $PWD
+        set_color normal
+    end
+end
+
+function goto
+    if test (count $argv) > 0
+        printf "shortcut_%s" $argv[1]
+        cd (printf "\$shortcut_%s" $argv[1])
+        ls
+    end
 end
 
 function back

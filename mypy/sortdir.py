@@ -23,120 +23,107 @@ CATEGORIES = {
 }
 
 MAX_RECENT_FILES = 15
+recent_files = []
+
+# Paths
+path = os.getcwd()
+recent_path = os.path.join(path, "recent")
+recent_file_path = os.path.join(path, ".recent")
+all_path = os.path.join(path, "all")
+
+def load_recent_files():
+    global recent_files
+    # Create .recent file
+    if not os.path.exists(recent_file_path):
+        with open(recent_file_path, "w") as f:
+            pass
+    # Load recent files
+    if os.path.exists(".recent"):
+        with open(recent_file_path, "r") as f:
+            lines = f.readlines()
+            for line in lines:
+                # Assert file still exists
+                if os.path.exists(os.path.join(path, line.strip())):
+                    recent_files.append(line.strip())
+
+def get_category(filename):
+    _, ext = os.path.splitext(filename)
+    ext = ext[1:].lower()
+    for cat in CATEGORIES:
+        if ext in CATEGORIES[cat]:
+            return cat
+    if os.path.isdir(os.path.join(path, filename)):
+        return "directories"
+    return "other"
+
+def move_file(filename):
+    cat = get_category(filename)
+
+    # Make category dir if not exists
+    cat_path = os.path.join(all_path, cat)
+    if not os.path.exists(cat_path):
+        os.mkdir(cat_path)
+   
+    # Filename split
+    fn, ext = os.path.splitext(filename)
+    
+    # Dodge duplicates
+    move_name = filename
+    move_path = os.path.join(cat_path, filename)
+    number = 2
+    while os.path.exists(move_path):
+        move_name = fn+"_"+str(number)+ext
+        move_path = os.path.join(cat_path, move_name)
+        number += 1
+    if move_name != filename:
+        os.rename(filename, move_name)
+        
+    # Move file
+    shutil.move(move_name, move_path)
+
+def scan_root():
+    global recent_files
+
+    files = os.listdir(path)
+    new_files = [f for f in files if f not in recent_files]
+
+    for filename in new_files:
+        fn, ext = os.path.splitext(filename)
+        ext = ext[1:].lower()
+
+        # Ignore meta or downloads
+        if fn in ["all", ".recent", ".DS_Store"] or ext in ["download", "part"]:
+            continue
+        
+        # Check if new file
+        print(f"Detected new file '{filename}', current recent = {len(recent_files)}")
+        # Remove oldest file in max limit
+        if len(recent_files) == MAX_RECENT_FILES:
+            oldest = recent_files.pop(0)
+            move_file(oldest)
+            print(f" ... moved oldest file {oldest}, now {len(recent_files)} remain")
+        # Add new file
+        recent_files.append(filename)
+    
+    # Write recents file
+    print("\n .recent")
+    with open(recent_file_path, "w") as f:
+        for r in recent_files:
+            f.write(r+"\n")
+            print(f" {r}")
 
 if __name__ == "__main__":
-
-    path = os.getcwd()
-    recent_path = os.path.join(path, "recent")
-    files = os.listdir(path)
 
     if len(sys.argv) < 2 or sys.argv[1] != "skip":
         if input("Are you sure? [y/n]") not in ["Y","y"]:
             print("Aborted")
             exit(-1)   
 
-    
-    recent_files = []
+    # Create directories
+    if not os.path.exists(all_path):
+        os.mkdir(all_path)
 
-    # Load recent files
-    if not os.path.exists(recent_path):
-        os.mkdir(recent_path)
-    if os.path.exists(os.path.join(recent_path, ".recent")):
-        with open(os.path.join(recent_path, ".recent"), "r") as f:
-            lines = f.readlines()
-            for line in lines:
-                f_dat = line.split("\t")
-                if len(f_dat) >= 2:
-                    recent_files.append({
-                        "name": f_dat[0].strip(),
-                        "path": f_dat[1].strip()
-                    })
-                
-    results = {"directories": []}
-    for c in CATEGORIES:
-        results[c] = []
-
-    other = []
-
-    for filename in files:
-        fn, ext = os.path.splitext(filename)
-        ext = ext[1:].lower()
-
-        if fn == ".DS_Store":
-            continue
-        if ext == "download":
-            continue
-        if ext != "app" and os.path.isdir(os.path.join(path, filename)):
-            if fn not in CATEGORIES and fn not in ["other", "directories", "recent"]:
-                results["directories"].append(filename)
-        else:
-            ok = False
-            for cat in CATEGORIES:
-                if ext in CATEGORIES[cat]:
-                    results[cat].append(filename)
-                    ok = True
-                    break
-            if not ok:
-                other.append(filename)
-    
-    for cat in results:
-        if len(results[cat]) > 0:
-            cat_path = os.path.join(path, cat)
-            if not os.path.exists(cat_path):
-                os.mkdir(cat_path)
-
-            for fname in results[cat]:
-                fn, ext = os.path.splitext(fname)
-                number = 2
-                move_name = fname
-                move_path = os.path.join(cat_path, fname)
-                while os.path.exists(move_path):
-                    move_name = fn+"_"+str(number)+ext
-                    move_path = os.path.join(cat_path, move_name)
-                    number += 1
-                if move_name is not fname:
-                    os.rename(fname, move_name)
-                recent_files.append({
-                    "name": move_name,
-                    "path": move_path
-                })
-                shutil.move(move_name, move_path)
-
-    if len(other) > 0:
-        other_path = os.path.join(path, "other")
-        if not os.path.exists(other_path):
-            os.mkdir(other_path)
-
-        for fname in other:
-            fn, ext = os.path.splitext(fname)
-            number = 2
-            move_name = fname
-            move_path = os.path.join(other_path, fname)
-            while os.path.exists(move_path):
-                move_name = fn+"_"+str(number)+ext
-                move_path = os.path.join(other_path, move_name)
-                number += 1
-            if move_name is not fname:
-                os.rename(fname, move_name)
-            recent_files.append({
-                "name": move_name,
-                "path": other_path
-            })
-            shutil.move(move_name, other_path)
-
-    # Update recents folder
-    old_recent = [ f for f in os.listdir(recent_path) if not os.path.isdir(os.path.join(recent_path, f)) ]
-    for f_name in old_recent:
-        os.remove(os.path.join(recent_path, f_name))
-    
-    while len(recent_files) > MAX_RECENT_FILES:
-        recent_files.pop(0)
-
-    for f in recent_files:
-        os.symlink(f["path"], os.path.join(recent_path, f["name"]))
-
-    with open(os.path.join(recent_path, ".recent"), "w") as f:
-        for r in recent_files:
-            f.write(r["name"]+"\t"+r["path"]+"\n")
+    load_recent_files()
+    scan_root()
 
     print("Done")
